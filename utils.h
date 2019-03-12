@@ -1,13 +1,13 @@
 #pragma once
 #include "board_structures.h"
-
 #include <string>
 #include <vector>
 #include <fstream>
+#include <iostream>
 
 
 namespace utils{
-    vector<vector<Cell> > get_board_from_file(std::string path) {
+    inline vector<vector<Cell> > get_board_from_file(std::string path) {
         std::fstream infile(path.c_str());
         vector<vector<Cell> > board;
         std::string line;
@@ -49,5 +49,11 @@ namespace utils{
         }       
 
         return board;
-    }  
+    }
+
+    inline vector<vector<Cell> > printPath(vector<Pose> path) {
+        for(pose: path){
+            std::cout << "("<<pose.x <<","<<pose.y<<")->";
+        }
+    }
 }

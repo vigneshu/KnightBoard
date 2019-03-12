@@ -8,9 +8,10 @@ using std::vector;
 
 class KnightBoard {
 public:
-    KnightBoard(int board_size);
+    KnightBoard(std::string board_file_path);
     void printBoard(Pose &knight_position);
     vector<Pose> findPath(Pose &start_pose, Pose &end_pose);
+    Knight getKnight();
 
 private:
     vector<Pose> getTeleportTiles();
@@ -21,7 +22,6 @@ private:
 
     int size_;
     vector<vector<Cell> > board_;
-    // std::shared_ptr<Knight> knight_;//{std::make_shared<AdapterFactoryMock>()};
-    Knight knight_;//{std::make_shared<AdapterFactoryMock>()};
+    Knight knight_;
     vector<vector<int> > cost_matrix_;
 };

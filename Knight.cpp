@@ -1,5 +1,7 @@
 #include "Knight.h"
+#include <iostream>
 
+Knight::Knight() {}
 Knight::Knight(vector<vector<Cell> > board): board_(board){}
 
 bool Knight::isPoseWithinBounds(Pose pose) {
@@ -47,6 +49,12 @@ bool Knight::isValidJump(Pose pose1, Pose pose2) {
 	result = result && isPoseWithinBounds(pose1);
 	result = result && isPoseWithinBounds(pose2);
 	result = result && isPathBlocked(pose1, pose2);
+
+    int d_x = abs(pose1.x - pose2.x);
+    int d_y = abs(pose1.y - pose2.y);
+    bool valid_jump = (d_x == 1 && d_y == 2) || (d_x ==2 && d_y == 1);
+	result = result && valid_jump;
+	
 	return result;
 }
 
@@ -55,7 +63,7 @@ bool Knight::isValidSequence(Sequence seq) {
 	for (int i = 1; i < seq.seq.size(); i ++){
 		Pose pose1 = seq.seq[i - 1];
 		Pose pose2 = seq.seq[i];
-		if(isValidJump(pose1, pose2)){
+		if(!isValidJump(pose1, pose2)){
 			result = false;
 			break;
 		}

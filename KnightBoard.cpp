@@ -3,18 +3,21 @@
 #include <iostream>
 
 #include "KnightBoard.h"
-// #include "utils.h"
+#include "utils.h"
 
 #define INT_MAX std::numeric_limits<int>::max()
-const std::string file_path = "map.txt";
 
-KnightBoard::KnightBoard(int board_size): size_(board_size) {
-    // board_ = utils::get_board_from_file(file_path);
+KnightBoard::KnightBoard(std::string file_path) {
+    board_ = utils::get_board_from_file(file_path);
+    size_ = board_.size();
     Knight knight_temp(board_);
     knight_ = knight_temp;
     cost_matrix_ = getCostMatrix();
 }
 
+Knight KnightBoard::getKnight() {
+    return knight_;
+}
 vector<Pose> KnightBoard::getTeleportTiles() {
     vector<Pose> tiles;
     for (auto row: board_) {
