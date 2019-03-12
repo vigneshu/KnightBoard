@@ -1,3 +1,4 @@
+#pragma once
 #include "board_structures.h"
 
 #include <string>
@@ -6,62 +7,47 @@
 
 
 namespace utils{
-
-    vector<vector<Cell>> get_board_from_file(std::string path) {
-        std::ifstream infile(path);
-        vector<vector<Cell>> board;
+    vector<vector<Cell> > get_board_from_file(std::string path) {
+        std::fstream infile(path.c_str());
+        vector<vector<Cell> > board;
         std::string line;
-        int row = 0, col = 0;
+        int row_index = 0, col_index = 0;
         char ch;
         while (std::getline(infile, line))
         {
-            std::istringstream iss(line);
-            vector<string> cells = split(line, " ");
             vector<Cell> row;
-            for (cell: cells) {
-                switch (cell) {
-                        case ".":
-                            row.push_back(BarrierType.FREE_SPACE);
+            for (ch: line) {
+                Cell cell(Pose(row_index, col_index), BarrierType::FREE_SPACE);
+                switch (ch) {
+                        case '.':
+                            cell.barrier_type = BarrierType::FREE_SPACE;
                             break;
-                        case "R":
-                            row.push_back(BarrierType.ROCK);
+                        case 'R':
+                            cell.barrier_type = BarrierType::ROCK;
                             break;
-                        case "W":
-                            row.push_back(BarrierType.WATER);
+                        case 'W':
+                            cell.barrier_type = BarrierType::WATER;
                             break;
-                        case "B":
-                            row.push_back(BarrierType.BARRIER);
+                        case 'B':
+                            cell.barrier_type = BarrierType::BARRIER;
                             break;
-                        case "L":
-                            row.push_back(BarrierType.LAVA);
+                        case 'L':
+                            cell.barrier_type = BarrierType::LAVA;
                             break;
-                        case "T":
-                            row.push_back(BarrierType.TELEPORT);
+                        case 'T':
+                            cell.barrier_type = BarrierType::TELEPORT;
                             break;
                         default:
                             throw;
                     }
+                    row.push_back(cell);
+                    col_index++;
             }
             board.push_back(row);
-            row++;
-            col = 0;
+            row_index++;
+            col_index = 0;
         }       
 
         return board;
-    }
-
-    vector<string> split (string s, string delimiter) {
-        size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-        string token;
-        vector<string> res;
-
-        while ((pos_end = s.find (delimiter, pos_start)) != string::npos) {
-            token = s.substr (pos_start, pos_end - pos_start);
-            pos_start = pos_end + delim_len;
-            res.push_back (token);
-        }
-
-        res.push_back (s.substr (pos_start));
-        return res;
-    }    
+    }  
 }

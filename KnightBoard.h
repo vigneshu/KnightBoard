@@ -1,6 +1,8 @@
+#pragma once
 #include <vector>
 #include <memory>
-#include <board_structures.h>
+#include "board_structures.h"
+#include "Knight.h"
 
 using std::vector;
 
@@ -13,12 +15,13 @@ public:
 private:
     vector<Pose> getTeleportTiles();
     Pose getPositionFromIndex(const int index);
-    Pose getIndexFromPosition(const Pose &pose);
-    vector<vector<int>> getCostMatrix();
+    int getIndexFromPosition(const Pose &pose);
+    vector<vector<int> > getCostMatrix();
     vector<Pose> findPathHelper(vector<int> &parent, Pose &end_pose);
 
     int size_;
-    vector<vector<Cell>> board_;
-    std::shared_ptr<Knight> knight_;
-    vector<vector<int>> cost_matrix_;
-}
+    vector<vector<Cell> > board_;
+    // std::shared_ptr<Knight> knight_;//{std::make_shared<AdapterFactoryMock>()};
+    Knight knight_;//{std::make_shared<AdapterFactoryMock>()};
+    vector<vector<int> > cost_matrix_;
+};
