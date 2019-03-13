@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include<iostream>
 
 using std::vector;
 struct Pose {
@@ -41,3 +42,18 @@ struct Sequence {
 	vector<Pose> seq;
 };
 
+inline std::ostream& operator<<(std::ostream& os, const Pose& m)
+{
+    return os << "x: " <<  m.x << ", y: " << m.y; 
+} 
+
+inline std::ostream& operator << (std::ostream& os, const BarrierType& obj)
+{
+   os << static_cast<std::underlying_type<BarrierType>::type>(obj);
+   return os;
+}
+
+inline std::ostream& operator<<(std::ostream& os, const Cell& c)
+{
+    return os << "pose: " <<  c.pose << ", barrier_type: " << c.barrier_type; 
+}

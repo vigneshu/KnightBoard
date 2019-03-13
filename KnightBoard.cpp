@@ -8,11 +8,13 @@
 #define INT_MAX std::numeric_limits<int>::max()
 
 KnightBoard::KnightBoard(std::string file_path) {
+    std::cout << "KnightBoard start "<<std::endl;
     board_ = utils::get_board_from_file(file_path);
     size_ = board_.size();
     Knight knight_temp(board_);
     knight_ = knight_temp;
     cost_matrix_ = getCostMatrix();
+    std::cout << "KnightBoard end size_ "<<size_<<std::endl;
 }
 
 Knight KnightBoard::getKnight() {
@@ -20,6 +22,7 @@ Knight KnightBoard::getKnight() {
 }
 vector<Pose> KnightBoard::getTeleportTiles() {
     vector<Pose> tiles;
+
     for (auto row: board_) {
         for (auto cell: row) {
             if (cell.barrier_type == BarrierType::TELEPORT){
@@ -27,6 +30,8 @@ vector<Pose> KnightBoard::getTeleportTiles() {
             }
         }
     }
+    std::cout<<"tiles.size"<<tiles.size()<<std::endl;
+  return tiles;
 }
 
 Pose KnightBoard::getPositionFromIndex(const int index) {
@@ -41,10 +46,11 @@ vector<vector<int> > KnightBoard::getCostMatrix(){
   vector< vector<int> > adjacency_matrix(size_*size_, vector<int>(size_*size_));
   for(int row = 0; row < size_* size_; row++) {
     for(int col = 0; col < size_* size_; col++) {
-        Pose start_pose = getPositionFromIndex(row);
-        Pose end_pose = getPositionFromIndex(col);
-        if (knight_.isValidJump(start_pose, end_pose)) {
-            switch (board_[end_pose.x][end_pose.y].barrier_type){
+        Pose source = getPositionFromIndex(row);
+        Pose dest = getPositionFromIndex(col);
+        if (knight_.isValidJump(source, dest)) {
+            
+            switch (board_[dest.x][dest.y].barrier_type){
                 case BarrierType::FREE_SPACE:
                     adjacency_matrix[row][col] = 1;
                     break;
@@ -55,53 +61,78 @@ vector<vector<int> > KnightBoard::getCostMatrix(){
                     adjacency_matrix[row][col] = 5;
                     break;
                 case BarrierType::TELEPORT:
-                    adjacency_matrix[row][col] = INT_MAX;
-                    for (auto tile_pose: getTeleportTiles()) {
-                        if (tile_pose == end_pose) {
-                            adjacency_matrix[tile_pose.x][tile_pose.y] = INT_MAX;
+                    for (auto teleport_pose: getTeleportTiles()) {
+                        int teleport_index = getIndexFromPosition(teleport_pose);
+                        if (teleport_pose == dest) {
+                            if (adjacency_matrix[row][teleport_index] != 1)
+                                adjacency_matrix[row][teleport_index] = INT_MAX;
                         }
                         else {
-                            adjacency_matrix[tile_pose.x][tile_pose.y] = 1;
+                            adjacency_matrix[row][teleport_index] = 1;
                         }
                     }
                     break;
-            }
+                case BarrierType::ROCK:
+                case BarrierType::BARRIER:
+                    adjacency_matrix[row][col] = INT_MAX;
+                    break;
+            }    
         }
         else {
             adjacency_matrix[row][col] = INT_MAX;
         }
+                    
     }
     }
+    printHelper(adjacency_matrix);
+    return adjacency_matrix;
 }
-vector<Pose> KnightBoard::findPathHelper(vector<int> &parent, Pose &end_pose) {
+
+void KnightBoard::printHelper(vector< vector<int> > vec){
+    for (int i = 0; i < vec.size(); i++) {
+        for (int j = 0; j < vec[i].size(); j++) {
+            std::cout<< vec[i][j]<< " ";
+            }
+            std::cout<<std::endl;
+        }
+}
+vector<Pose> KnightBoard::findPathHelper(vector<int> &parent_indices, Pose &end_pose) {
     int src = 0; 
-    int end_pose_index = getIndexFromPosition(end_pose);
+    int cur_pose_index = getIndexFromPosition(end_pose);
 
     vector<Pose> path;
     while(true){
-        int parent_index = parent[end_pose_index];
-        if (parent_index == -1)
+        int parent_index = parent_indices[cur_pose_index];
+        if (parent_index == -1){
             break;
+        }
         path.push_back(getPositionFromIndex(parent_index));
+        cur_pose_index = parent_index;
     }
     std::reverse(path.begin(),path.end());
     return path;
 }
 
 vector<Pose> KnightBoard::findPath(Pose &start_pose, Pose &end_pose) {
+    std::cout << "findPath 1 "<<std::endl;
+    std::cout << "findPath cost_matrix_ size "<< cost_matrix_.size()<<std::endl;
     vector<int> dist(cost_matrix_.size(), INT_MAX);
+    std::cout << "findPath 1.5 "<<std::endl;
     vector<bool> visited(cost_matrix_.size(), false);
-    vector<int> parent(cost_matrix_.size(), false);
+    vector<int> parent_indices(cost_matrix_.size(), false);
     int start_pose_index = getIndexFromPosition(start_pose);
-    parent[start_pose_index] = -1;
+    std::cout << "findPath 2 "<<std::endl;
+    parent_indices[start_pose_index] = -1;
     dist[start_pose_index] = 0;
     for (int iteration = 0; iteration < cost_matrix_.size(); iteration++) {
         // Pop the minimum unvisted value
         int min = INT_MAX, min_index;
         for (int i = 0; i < cost_matrix_.size(); i++) 
             if (visited[i] == false && 
-                       dist[i] <= min) 
-                min = dist[i], min_index = i;
+                       dist[i] < min) {
+                min = dist[i];
+                min_index = i;
+            }
 
         // Mark the picked vertex as visited 
         visited[min_index] = true; 
@@ -112,12 +143,29 @@ vector<Pose> KnightBoard::findPath(Pose &start_pose, Pose &end_pose) {
             if (!visited[v] && cost_matrix_[min_index][v] < INT_MAX && 
                 dist[min_index] + cost_matrix_[min_index][v] < dist[v]) 
             { 
-                parent[v] = min_index; 
+                parent_indices[v] = min_index; 
                 dist[v] = dist[min_index] + cost_matrix_[min_index][v]; 
             }  
     }
 
-    vector<Pose> path = findPathHelper(parent, end_pose);
+    std::cout<<"dist: ";
+    for (auto item: dist){
+        std::cout << item << " ";
+    }
+    std::cout << std::endl;
+    std::cout<<"parent indices: ";
+    for (auto item: parent_indices){
+        std::cout << item << " ";
+    }
+    std::cout << std::endl;
+std::cout << "findPath 3 "<< end_pose <<std::endl;
+    vector<Pose> path = findPathHelper(parent_indices, end_pose);
+    
+    for (auto item: path){
+        std::cout << item << " ";
+    }
+
+    std::cout << "findPath 4 "<<std::endl;
     return path;
 }
 

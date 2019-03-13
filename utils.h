@@ -51,9 +51,10 @@ namespace utils{
         return board;
     }
 
-    inline vector<vector<Cell> > printPath(vector<Pose> path) {
-        for(pose: path){
+    inline void printPath(vector<Pose> path) {
+        for(auto pose: path){
             std::cout << "("<<pose.x <<","<<pose.y<<")->";
         }
+        std::cout<<"\b\b  "<<std::endl;
     }
 }

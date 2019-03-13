@@ -13,8 +13,8 @@ int main(int argc, char** argv) {
   KnightBoard kb("map.txt");
   std::cout<<"sss"<<std::endl;
   Pose knightPose(0, 0);
-  Pose startPose(0, 0);
-  Pose endPose(1, 1);
+  Pose startPose(0, 1);
+  Pose endPose(2,2);
   std::cout<<"sss"<<std::endl;
 
 
@@ -30,11 +30,14 @@ int main(int argc, char** argv) {
     std::cout<< "not valid seq"<< std::endl;    
   }
   
-  // Level 2, Level 3 and Level 4
   vector<Pose> path = kb.findPath(startPose, endPose);
-  utils::printPath(path);
-  // kb.printBoard(knightPose);
-  std::cout<<"ss!!!s"<<std::endl;
+  if (path.size() > 0){
+    path.push_back(endPose);
+    utils::printPath(path);
+  }
+  else{
+    std::cout << "No path found "<<std::endl;
+  }
   return 0;
 }
 

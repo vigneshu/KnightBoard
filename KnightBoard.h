@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include <memory>
 #include "board_structures.h"
 #include "Knight.h"
@@ -19,6 +20,7 @@ private:
     int getIndexFromPosition(const Pose &pose);
     vector<vector<int> > getCostMatrix();
     vector<Pose> findPathHelper(vector<int> &parent, Pose &end_pose);
+    void printHelper(vector< vector<int> > vec);
 
     int size_;
     vector<vector<Cell> > board_;

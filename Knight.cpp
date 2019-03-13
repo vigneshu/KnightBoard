@@ -45,15 +45,21 @@ bool Knight::isPathBlocked(Pose pose1, Pose pose2) {
 }
 
 bool Knight::isValidJump(Pose pose1, Pose pose2) {
-	bool result = false;
+	
+	bool result = true;
+	// std::cout << "result 1 "<< result <<std::endl;
 	result = result && isPoseWithinBounds(pose1);
+	// std::cout << "result 2 "<< result <<std::endl;
 	result = result && isPoseWithinBounds(pose2);
+	// std::cout << "result 3 "<< result <<std::endl;
 	result = result && isPathBlocked(pose1, pose2);
+	// std::cout << "result 4 "<< result <<std::endl;
 
     int d_x = abs(pose1.x - pose2.x);
     int d_y = abs(pose1.y - pose2.y);
     bool valid_jump = (d_x == 1 && d_y == 2) || (d_x ==2 && d_y == 1);
 	result = result && valid_jump;
+	// std::cout << "result 5 "<< result <<std::endl;
 	
 	return result;
 }
