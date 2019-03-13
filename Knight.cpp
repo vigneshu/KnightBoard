@@ -9,6 +9,8 @@ bool Knight::isPoseWithinBounds(Pose pose) {
 }
 
 bool Knight::isPathBlocked(Pose pose1, Pose pose2) {
+	if (isObstacle(pose2))
+		return true;
 	int start_x = pose2.x > pose1.x ? pose1.x:pose2.x;
 	int end_x = pose2.x <= pose1.x ? pose1.x:pose2.x;
 	int x_diff = end_x - start_x;
@@ -50,6 +52,14 @@ bool Knight::isPathBlocked(Pose pose1, Pose pose2) {
 		return false;
 	}		
 	return true;
+}
+
+bool Knight::isObstacle(Pose pose) {
+	if (board_[pose.x][pose.y].barrier_type == BarrierType::BARRIER || 
+		board_[pose.x][pose.y].barrier_type == BarrierType::ROCK){
+		return true;
+	}
+	return false;
 }
 
 bool Knight::isValidJump(Pose pose1, Pose pose2) {

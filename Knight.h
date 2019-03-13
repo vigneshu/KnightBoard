@@ -10,6 +10,7 @@ class Knight{
         explicit Knight(vector<vector<Cell> > board);
         bool isValidJump(Pose pose1, Pose pose2);
         bool isValidSequence(Sequence seq);
+        bool isObstacle(Pose pose);
     
     private:
         bool isPoseWithinBounds(Pose pose);
