@@ -11,14 +11,16 @@ class KnightBoard {
 public:
     KnightBoard(std::string board_file_path);
     void printBoard(Pose &knight_position);
-    vector<Pose> findPath(Pose &start_pose, Pose &end_pose);
+    vector<Pose> findShortestPath(Pose &start_pose, Pose &end_pose);
+    vector<Pose> findLongestPath(Pose &start_pose, Pose &end_pose);
     Knight getKnight();
 
 private:
     vector<Pose> getTeleportTiles();
     Pose getPositionFromIndex(const int index);
     int getIndexFromPosition(const Pose &pose);
-    vector<vector<int> > getCostMatrix();
+    vector<vector<int> > getCostMatrix(int sign_multiplier = 1);
+    vector<Pose> findPath(Pose &start_pose, Pose &end_pose);
     vector<Pose> findPathHelper(vector<int> &parent, Pose &end_pose);
     void printHelper(vector< vector<int> > vec);
 

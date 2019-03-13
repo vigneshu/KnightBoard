@@ -8,29 +8,36 @@
 #include <iostream>
 
 int main(int argc, char** argv) {
-  // vector<vector<Cell> > board = utils::get_board_from_file("map.txt");
-  std::cout<<"sss"<<std::endl;
   KnightBoard kb("map.txt");
-  std::cout<<"sss"<<std::endl;
   Pose knightPose(0, 0);
-  Pose startPose(0, 1);
-  Pose endPose(2,2);
-  std::cout<<"sss"<<std::endl;
+  Pose startPose(0,0);
+  Pose endPose(1,1);
 
 
   Sequence seq;
   seq.seq.push_back(startPose);
   seq.seq.push_back(endPose);
-  // Level 1
+  // Valid sequence
   bool is_valid = kb.getKnight().isValidSequence(seq);
   if (is_valid) {
-    std::cout<< "valid seq"<< std::endl;
+    std::cout<< "Valid sequence"<< std::endl;
   }
   else {
-    std::cout<< "not valid seq"<< std::endl;    
+    std::cout<< "Not a valid sequence"<< std::endl;    
   }
   
-  vector<Pose> path = kb.findPath(startPose, endPose);
+  // Shortest path
+  vector<Pose> path = kb.findShortestPath(startPose, endPose);
+  if (path.size() > 0){
+    path.push_back(endPose);
+    utils::printPath(path);
+  }
+  else{
+    std::cout << "No path found "<<std::endl;
+  }
+
+  // Longest path
+  path = kb.findLongestPath(startPose, endPose);
   if (path.size() > 0){
     path.push_back(endPose);
     utils::printPath(path);
@@ -40,42 +47,3 @@ int main(int argc, char** argv) {
   }
   return 0;
 }
-
-
-
-/*
-
-          for (int i = 0; i < board.size(); i++) {
-            for (int j = 0; j < board.size(); j++) {
-
-
-            	switch (board[i][j].barrier_type) {
-                        case BarrierType::FREE_SPACE:
-                            std::cout <<".";
-                            break;
-                        case BarrierType::ROCK:
-                            std::cout <<"R";
-                            break;
-                        case BarrierType::WATER:
-                            std::cout <<"W";
-                            break;
-                        case BarrierType::BARRIER:
-                            std::cout <<"B";
-                            break;
-                        case BarrierType::LAVA:
-                            std::cout <<"L";
-                            break;
-                        case BarrierType::TELEPORT:
-                            std::cout <<"T";
-                            break;
-                        default:
-                            std::cout <<"?";
-                            // std::cout <<(int) board[i][j].barrier_type;
-
-                    }
-                    std::cout <<" ";
-
-            }
-            std::cout<<std::endl;
-        }
-*/
